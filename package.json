@@ -1,0 +1,6 @@
+{
+	"dependencies": {
+		"async-and-quick": "^1.0.2",
+		"express": "^4.19.2"
+	}
+}
