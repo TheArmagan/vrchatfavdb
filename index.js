@@ -180,6 +180,6 @@ app.get("/api/extras/last-import-date", async (req, res) => {
   return res.send({ ok: true, data: lastImportDate });
 });
 
-app.listen(3003, () => {
-  console.log("http://localhost:3003/app");
+app.listen(3000, () => {
+  console.log("http://localhost:3000/app");
 });
