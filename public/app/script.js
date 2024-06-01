@@ -122,13 +122,12 @@ document.querySelector("#import-avatars-button").addEventListener("click", async
   });
 
   e.target.disabled = false;
-
+  let j = await res.json();
   if (res.ok) {
-    alert("Imported successfully");
+    alert(`Imported new ${j.data} avatars successfully`);
     updateAvatars();
     updateImportDate();
   } else {
-    let j = await res.json();
     alert("Failed to import error: " + j.error);
   }
 });

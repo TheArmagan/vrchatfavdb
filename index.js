@@ -71,6 +71,8 @@ app.post("/api/favs/import", async (req, res) => {
 
   const avatars = await apiRes.json();
 
+  let oldCount = cachedAvatars.length;
+
   let resAvatars = [];
   let fetchedAt = new Date().toISOString();
   await aaq.quickForEach(avatars, async (avatar) => {
@@ -102,7 +104,11 @@ app.post("/api/favs/import", async (req, res) => {
 
   await updateAvatarsCache();
 
-  return res.send({ ok: true, data: resAvatars });
+  const diff = cachedAvatars.length - oldCount;
+
+  console.log("Imported avatars", diff);
+
+  return res.send({ ok: true, data: diff });
 });
 
 app.get("/api/favs", async (req, res) => {
@@ -145,6 +151,7 @@ app.post("/api/avatars/:id/select", async (req, res) => {
   const apiRes = await fetch(
     `https://vrchat.com/api/1/avatars/${avatar.id}/select`,
     {
+      method: "PUT",
       headers: {
         "cookie": vrChatCookie
       }
