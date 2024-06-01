@@ -3,9 +3,11 @@ const app = express();
 const fs = require("fs");
 const path = require("path");
 const aaq = require("async-and-quick");
+const mime = require("mime");
 
 const PUBLIC_DIR = path.join(__dirname, "public");
 const AVATARS_DIR = path.join(PUBLIC_DIR, "avatars");
+const AVATAR_IMAGES_DIR = path.join(PUBLIC_DIR, "avatar_images");
 const EXTRAS_DIR = path.join(PUBLIC_DIR, "extras");
 
 const ACCESS_KEY = fs.readFileSync(path.join(__dirname, "access_key.txt"), "utf8").trim();
@@ -13,13 +15,16 @@ const ACCESS_KEY = fs.readFileSync(path.join(__dirname, "access_key.txt"), "utf8
 [
   PUBLIC_DIR,
   AVATARS_DIR,
-  EXTRAS_DIR
+  EXTRAS_DIR,
+  AVATAR_IMAGES_DIR
 ].forEach(dir => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
 app.use(express.static(PUBLIC_DIR));
-app.use(express.json());
+app.use(express.json({
+  limit: "50mb"
+}));
 
 async function downloadFile(url, dest) {
   const res = await fetch(url);
@@ -35,9 +40,16 @@ async function downloadFile(url, dest) {
 let cachedAvatars = [];
 
 async function updateAvatarsCache() {
-  const avatarIds = await fs.promises.readdir(AVATARS_DIR);
-  cachedAvatars = await aaq.quickMap(avatarIds, async (avatarId) => {
-    return JSON.parse(await fs.promises.readFile(path.join(AVATARS_DIR, avatarId, "avatar.json"), "utf8"));
+  const fileNames = await fs.promises.readdir(AVATARS_DIR);
+  cachedAvatars = await aaq.quickMap(fileNames, async (fileName) => {
+    let avatar = JSON.parse(await fs.promises.readFile(path.join(AVATARS_DIR, fileName), "utf8"));
+    return {
+      avatar,
+      images: {
+        has_image: fs.existsSync(path.join(AVATAR_IMAGES_DIR, avatar.id, "image.png")),
+        has_uploaded_image: fs.existsSync(path.join(AVATAR_IMAGES_DIR, avatar.id, "uploaded_image.png"))
+      }
+    };
   });
   console.log("Updated avatars cache", cachedAvatars.length);
   return cachedAvatars;
@@ -76,8 +88,8 @@ app.post("/api/favs/import", async (req, res) => {
   let resAvatars = [];
   let fetchedAt = new Date().toISOString();
   await aaq.quickForEach(avatars, async (avatar) => {
-    const avatarDir = path.join(AVATARS_DIR, avatar.id);
-    if (!fs.existsSync(avatarDir)) await fs.promises.mkdir(avatarDir, { recursive: true });
+    const avatarImagesDir = path.join(AVATAR_IMAGES_DIR, avatar.id);
+    if (!fs.existsSync(avatarImagesDir)) await fs.promises.mkdir(avatarImagesDir, { recursive: true });
     let obj = {
       id: avatar.id,
       author: {
@@ -95,8 +107,8 @@ app.post("/api/favs/import", async (req, res) => {
     };
     resAvatars.push(obj);
     await Promise.all([
-      downloadFile(avatar.imageUrl, path.join(avatarDir, "image.png")),
-      fs.promises.writeFile(path.join(avatarDir, "avatar.json"), JSON.stringify(obj, null, 2))
+      downloadFile(avatar.imageUrl, path.join(avatarImagesDir, "image.png")),
+      fs.promises.writeFile(path.join(AVATARS_DIR, `${avatar.id}.json`), JSON.stringify(obj, null, 2))
     ]);
   });
 
@@ -117,39 +129,63 @@ app.get("/api/favs", async (req, res) => {
 
   return res.send({
     ok: true,
-    data: cachedAvatars.filter(i => i.search_index.includes(search))
+    data: cachedAvatars.filter(i => i.avatar.search_index.includes(search))
   });
 });
 
 app.get("/api/avatars/:id", async (req, res) => {
-  const avatar = cachedAvatars.find(i => i.id === req.params.id);
+  const avatar = cachedAvatars.find(i => i.avatar.id === req.params.id);
   if (!avatar) return res.status(404).send({ ok: false });
   return res.send({ ok: true, data: avatar });
 });
 
 app.delete("/api/avatars/:id", async (req, res) => {
-  const avatar = cachedAvatars.find(i => i.id === req.params.id);
+  const avatar = cachedAvatars.find(i => i.avatar.id === req.params.id);
   if (!avatar) return res.status(404).send({ ok: false });
 
   if (req.query.access_key !== ACCESS_KEY) {
     return res.status(403).send({ ok: false, error: "Invalid access key" });
   }
 
-  await fs.promises.rm(path.join(AVATARS_DIR, avatar.id), { recursive: true });
+  await fs.promises.rm(path.join(AVATARS_DIR, `${avatar.avatar.id}.json`), { recursive: true }).catch(() => { });
+  await fs.promises.rm(path.join(AVATAR_IMAGES_DIR, avatar.avatar.id), { recursive: true }).catch(() => { });
 
   await updateAvatarsCache();
 
   return res.send({ ok: true });
 });
 
+app.post("/api/avatars/:id/upload-image", async (req, res) => {
+  const avatar = cachedAvatars.find(i => i.avatar.id === req.params.id);
+  if (!avatar) return res.status(404).send({ ok: false });
+
+  if (req.query.access_key !== ACCESS_KEY) {
+    return res.status(403).send({ ok: false, error: "Invalid access key" });
+  }
+
+  try {
+    const image = req.body.image.replace(/^data:image\/\w+;base64,/, "");
+    const imageBuffer = Buffer.from(image, "base64");
+    await fs.promises.writeFile(path.join(AVATAR_IMAGES_DIR, avatar.avatar.id, "uploaded_image.png"), imageBuffer);
+  } catch (e) {
+    console.error("Failed to upload image", e);
+    return res.status(500).send({ ok: false, error: e.message });
+  }
+
+  await updateAvatarsCache();
+
+  return res.send({ ok: true });
+});
+
+
 app.post("/api/avatars/:id/select", async (req, res) => {
-  const avatar = cachedAvatars.find(i => i.id === req.params.id);
+  const avatar = cachedAvatars.find(i => i.avatar.id === req.params.id);
   if (!avatar) return res.status(404).send({ ok: false });
 
   const vrChatCookie = req.body.cookie;
 
   const apiRes = await fetch(
-    `https://vrchat.com/api/1/avatars/${avatar.id}/select`,
+    `https://vrchat.com/api/1/avatars/${avatar.avatar.id}/select`,
     {
       method: "PUT",
       headers: {

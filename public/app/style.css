@@ -17,9 +17,13 @@ html, body, #app {
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
-button, input {
+button, input, select {
   padding: 8px 16px;
   border: 1px solid whitesmoke;
+  background-color: #333;
+}
+
+option {
   background-color: #333;
 }
 
@@ -45,6 +49,8 @@ button:hover, input:hover, button:focus, input:focus {
 h2 {
   margin-bottom: 8px;
 }
+
+
 
 #avatar-list {
   display: flex;

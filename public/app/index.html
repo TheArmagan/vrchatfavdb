@@ -35,9 +35,12 @@
     <div id="avatars" class="control-section">
       <div class="control-line">
         <h2>Avatar List (<span id="avatar-count">0</span>)</h2>
-        <span>
-          <input type="text" placeholder="Search.." id="avatars-search-input">
-        </span>
+        <input type="text" placeholder="Search.." id="avatars-search-input">
+        <select id="extra-avatar-filters" name="extra-avatar-filters" title="Extra Filters">
+          <option value="all">All</option>
+          <option value="without_uploaded_image">Without Uploaded Image</option>
+          <option value="with_uploaded_image">With Uploaded Image</option>
+        </select>
       </div>
       <div id="avatar-list"></div>
     </div>
