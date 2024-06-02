@@ -110,6 +110,7 @@ const componentScripts = {
 
         alert(`Success fully added new ${json.data} avatars!`);
         window.internalApp.updateAvatars();
+        this.updateImportDate();
       }
     }
   },
