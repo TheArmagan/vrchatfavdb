@@ -3,5 +3,11 @@
 		"async-and-quick": "^1.0.2",
 		"express": "^4.19.2",
 		"mime": "3.0.0"
-	}
+	},
+	"scripts": {
+		"start": "node index.js"
+	},
+	"main": "index.js",
+	"license": "GPL-3.0-only",
+	"author": "Kıraç Armağan Önal"
 }
