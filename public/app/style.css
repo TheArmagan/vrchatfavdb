@@ -169,8 +169,8 @@ body {
   border-radius: 4px;
   color: rgba(245, 245, 245, 0.75);
   height: 450px;
-  width: 216px;
-  max-width: 216px;
+  width: 220px;
+  max-width: 220px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -205,12 +205,18 @@ body {
 #app > .avatars-container > .avatar-list .avatar-model > .info > .title > .name {
   font-size: 20px;
   font-weight: 600;
+  text-wrap: wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 #app > .avatars-container > .avatar-list .avatar-model > .info > .title > .author {
   font-size: 12px;
   font-weight: 300;
   color: rgba(245, 245, 245, 0.75);
   line-height: 1.25;
+  text-wrap: wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 #app > .avatars-container > .avatar-list .avatar-model > .info > .bottom {
   display: flex;
