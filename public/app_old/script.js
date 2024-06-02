@@ -55,7 +55,7 @@ extraAvatarsFilters.addEventListener("change", async () => {
 
 async function updateAvatars() {
   let search = document.querySelector("#avatars-search-input").value;
-  let avatars = (await fetch(`/api/favs${search?.trim() ? `?search=${encodeURIComponent(search.trim())}` : ""}`).then(res => res.json())).data;
+  let avatars = (await fetch(`/api/favs${search?.trim() ? `?search=${encodeURIComponent(search.trim())}` : ""}`).then(res => res.json())).data.avatars;
 
   switch (extraAvatarsFilters.value) {
     case "without_uploaded_image": {

@@ -1,101 +1,291 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 * {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
   color: whitesmoke;
   outline: none;
+  font-family: "Poppins", sans-serif;
 }
 
-html, body, #app {
+html,
+body,
+#app {
   height: 100%;
   width: 100%;
-  background-color: #333;
+}
+
+body {
+  background-color: #0e1013;
+  background-image: linear-gradient(135deg, #0e1013 25%, #07242b 75%);
+  background-attachment: fixed;
 }
 
 #app {
-  padding: 16px;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-}
-
-button, input, select {
-  padding: 8px 16px;
-  border: 1px solid whitesmoke;
-  background-color: #333;
-}
-
-option {
-  background-color: #333;
-}
-
-button:hover, input:hover, button:focus, input:focus {
-  background-color: #444;
-}
-
-.control-section {
-  margin-bottom: 16px;
-  border-bottom: 1px solid #666;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding-bottom: 16px;
+  padding: 16px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  gap: 16px;
 }
-
-.control-line {
+#app > .nav {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+#app > .nav > .title-container {
+  font-size: 28px;
+  font-weight: 600;
+}
+#app > .nav > .icons-container {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-
-h2 {
-  margin-bottom: 8px;
+#app > .nav > .icons-container .icon {
+  display: flex;
+  cursor: pointer;
+  padding: 8px;
+  background-color: #0e1013;
+  border-radius: 50%;
+  opacity: 0.9;
+  transition: opacity 100ms ease-in-out;
 }
-
-#avatar-list {
+#app > .nav > .icons-container .icon:hover {
+  opacity: 1;
+}
+#app > .nav > .icons-container .icon svg {
+  width: 24px;
+  height: 24px;
+  color: whitesmoke;
+}
+#app > .controls > .controls-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+#app > .controls > .controls-tab > .title-container {
+  font-size: 18px;
+  font-weight: 500;
+}
+#app > .controls > .controls-tab > .controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+#app > .controls > .controls-tab > .controls .control {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-left: 8px;
+  border-left: 2px solid #191e24;
+  border-radius: 4px;
+}
+#app > .controls > .controls-tab > .controls .control > .info {
+  display: flex;
+  flex-direction: column;
+  max-width: 500px;
+}
+#app > .controls > .controls-tab > .controls .control > .info > .title {
+  font-size: 16px;
+  font-weight: 500;
+}
+#app > .controls > .controls-tab > .controls .control > .info > .description {
+  font-size: 14px;
+  font-weight: 300;
+  color: rgba(245, 245, 245, 0.75);
+  line-height: 1.25;
+}
+#app > .controls > .controls-tab > .controls .control .input-container {
+  width: -moz-fit-content;
+  width: fit-content;
+  max-width: 500px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+#app > .avatars-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 16px;
+}
+#app > .avatars-container > .header-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+#app > .avatars-container > .header-container > .title-container {
+  display: flex;
+  flex-direction: column;
+}
+#app > .avatars-container > .header-container > .title-container > .title {
+  font-size: 24px;
+  font-weight: 600;
+}
+#app > .avatars-container > .header-container > .title-container > .count {
+  font-size: 14px;
+  font-weight: 300;
+  color: rgba(245, 245, 245, 0.75);
+  line-height: 1.25;
+}
+#app > .avatars-container > .header-container > .search-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+#app > .avatars-container > .avatar-list {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
-
-  .avatar-item {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 16px;
-    padding: 8px;
-    border-radius: 8px;
-    border: 1px solid #666;
-    flex-direction: column;
-    width: 200px;
-
-    .image {
-      width: 100%;
-      height: 200px;
-      background-size: contain;
-      background-position: center center;
-      background-repeat: no-repeat;
-      border-radius: 8px;
-    }
-
-    .info {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      font-size: 14px;
-
-      .notes {
-        display: flex;
-        gap: 4px;
-        flex-direction: column;
-
-        .note {
-          font-size: 12px;
-          color: whitesmoke;
-          opacity: 0.8;
-        }
-      }
-    }
-  }
+  justify-content: center;
+}
+#app > .avatars-container > .avatar-list .avatar-model {
+  background-color: #0e1013;
+  border: 2px solid #191e24;
+  transition: all 100ms ease-in-out;
+  padding: 8px;
+  border-radius: 4px;
+  color: rgba(245, 245, 245, 0.75);
+  height: 450px;
+  width: 216px;
+  max-width: 216px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+#app > .avatars-container > .avatar-list .avatar-model:hover, #app > .avatars-container > .avatar-list .avatar-model.selected {
+  border: 2px solid #082b34;
+  color: whitesmoke;
+}
+#app > .avatars-container > .avatar-list .avatar-model > .image {
+  width: 200px;
+  min-width: 200px;
+  height: 200px;
+  min-height: 200px;
+  border-radius: 4px;
+  background-color: #191e24;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: var(--image);
+}
+#app > .avatars-container > .avatar-list .avatar-model > .info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  gap: 8px;
+}
+#app > .avatars-container > .avatar-list .avatar-model > .info > .title {
+  display: flex;
+  flex-direction: column;
+}
+#app > .avatars-container > .avatar-list .avatar-model > .info > .title > .name {
+  font-size: 20px;
+  font-weight: 600;
+}
+#app > .avatars-container > .avatar-list .avatar-model > .info > .title > .author {
+  font-size: 12px;
+  font-weight: 300;
+  color: rgba(245, 245, 245, 0.75);
+  line-height: 1.25;
+}
+#app > .avatars-container > .avatar-list .avatar-model > .info > .bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+#app > .avatars-container > .avatar-list .avatar-model > .info > .bottom > .note {
+  font-size: 12px;
+  font-weight: 300;
+  color: rgba(245, 245, 245, 0.5);
+  line-height: 1.25;
+}
+#app > .avatars-container > .avatar-list .avatar-model > .info > .bottom > .buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-button.small {
+input[type=text],
+input[type=password],
+input[type=number],
+textarea,
+select {
+  background-color: #0e1013;
+  border: 2px solid #191e24;
+  transition: all 100ms ease-in-out;
   padding: 4px 8px;
+  border-radius: 4px;
+  color: rgba(245, 245, 245, 0.75);
+  font-size: 14px;
+}
+input[type=text]:hover, input[type=text]:focus,
+input[type=password]:hover,
+input[type=password]:focus,
+input[type=number]:hover,
+input[type=number]:focus,
+textarea:hover,
+textarea:focus,
+select:hover,
+select:focus {
+  border: 2px solid #082b34;
+  color: whitesmoke;
+}
+input[type=text]:disabled, input[type=text].disabled,
+input[type=password]:disabled,
+input[type=password].disabled,
+input[type=number]:disabled,
+input[type=number].disabled,
+textarea:disabled,
+textarea.disabled,
+select:disabled,
+select.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+option {
+  background-color: #0e1013;
+  color: whitesmoke;
+  font-size: 14px;
+}
+
+button {
+  padding: 4px 8px;
+  background-color: #0e1013;
+  border: 2px solid #191e24;
+  border-radius: 4px;
+  color: rgba(245, 245, 245, 0.95);
+  cursor: pointer;
+  transition: all 100ms ease-in-out;
+  font-size: 14px;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+button:hover {
+  background-color: #082b34;
+  border: 2px solid #082b34;
+  color: whitesmoke;
+  scale: 1.05;
+}
+button:active {
+  scale: 0.95;
+}
+button:disabled, button.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+button.small {
+  padding: 2px 4px;
   font-size: 12px;
+}
+
+template {
+  display: none;
 }

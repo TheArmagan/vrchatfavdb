@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VRCHATFAVDB</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="./script.js" defer></script>
+</head>
+<body>
+  <div id="app">
+    <div id="import" class="control-section">
+      <div class="control-line">
+        <span>
+          VRChat Cookie:
+        </span>
+        <input type="password" placeholder="Cookie" id="cookie-input" />
+      </div>
+      <div class="control-line">
+        <span>
+          Access Key:
+        </span>
+        <input type="password" placeholder="Access Key" id="access-key-input" />
+      </div>
+    </div>
+    <div class="control-section">
+      <h2>Import Fav Avatars</h2>
+      <div class="control-line">
+        Import Note: <input type="text" placeholder="Import Note" id="import-note">
+      </div>
+      <div class="control-line">
+        <button id="import-avatars-button">Import (<span id="last-import-date">...</span>)</button>
+      </div>
+    </div>
+    <div id="avatars" class="control-section">
+      <div class="control-line">
+        <h2>Avatar List (<span id="avatar-count">0</span>)</h2>
+        <input type="text" placeholder="Search.." id="avatars-search-input">
+        <select id="extra-avatar-filters" name="extra-avatar-filters" title="Extra Filters">
+          <option value="all">All</option>
+          <option value="without_uploaded_image">Without Uploaded Image</option>
+          <option value="with_uploaded_image">With Uploaded Image</option>
+        </select>
+      </div>
+      <div id="avatar-list"></div>
+    </div>
+  </div>
+</body>
+</html>

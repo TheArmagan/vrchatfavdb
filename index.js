@@ -3,7 +3,6 @@ const app = express();
 const fs = require("fs");
 const path = require("path");
 const aaq = require("async-and-quick");
-const mime = require("mime");
 
 const PUBLIC_DIR = path.join(__dirname, "public");
 const AVATARS_DIR = path.join(PUBLIC_DIR, "avatars");
@@ -55,6 +54,10 @@ async function updateAvatarsCache() {
   return cachedAvatars;
 }
 
+function buildSearchIndex(avatar) {
+  return `${avatar.id} ${avatar.name} ${avatar.description} ${avatar.tags.join(" ")} ${avatar.author.name} ${avatar.id} ${avatar.author.id} ${avatar.note || ""}`.trim().toLowerCase();
+}
+
 updateAvatarsCache();
 
 app.post("/api/favs/import", async (req, res) => {
@@ -103,8 +106,8 @@ app.post("/api/favs/import", async (req, res) => {
       updated_at: avatar.updated_at,
       fetched_at: fetchedAt,
       note,
-      search_index: `${avatar.id} ${avatar.name} ${avatar.description} ${avatar.tags.join(" ")} ${avatar.authorName} ${note || ""} ${avatar.id} ${avatar.authorId}`.toLowerCase()
     };
+    obj.search_index = buildSearchIndex(obj);
     resAvatars.push(obj);
     await Promise.all([
       downloadFile(avatar.imageUrl, path.join(avatarImagesDir, "image.png")),
@@ -125,11 +128,14 @@ app.post("/api/favs/import", async (req, res) => {
 
 app.get("/api/favs", async (req, res) => {
   const search = req.query.search?.trim()?.toLowerCase();
-  if (!search) return res.send({ ok: true, data: cachedAvatars });
+  if (!search) return res.send({ ok: true, data: { avatars: cachedAvatars, total_count: cachedAvatars.length } });
 
   return res.send({
     ok: true,
-    data: cachedAvatars.filter(i => i.avatar.search_index.includes(search))
+    data: {
+      avatars: cachedAvatars.filter(i => i.avatar.search_index.includes(search)),
+      total_count: cachedAvatars.length
+    }
   });
 });
 
