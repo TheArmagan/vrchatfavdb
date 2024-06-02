@@ -38,8 +38,30 @@ body {
     justify-content: space-between;
 
     & > .title-container {
-      font-size: 28px;
-      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+
+      & > .title {
+        font-size: 28px;
+        font-weight: 600;
+        line-height: 1.25;
+      }
+
+      & > .subtext {
+        font-size: 14px;
+        font-weight: 300;
+        color: rgba(245, 245, 245, 0.75);
+        line-height: 1.25;
+
+        a {
+          text-decoration: none;
+          color: currentColor;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
     }
 
     & > .icons-container {

@@ -37,8 +37,26 @@ body {
   justify-content: space-between;
 }
 #app > .nav > .title-container {
+  display: flex;
+  flex-direction: column;
+}
+#app > .nav > .title-container > .title {
   font-size: 28px;
   font-weight: 600;
+  line-height: 1.25;
+}
+#app > .nav > .title-container > .subtext {
+  font-size: 14px;
+  font-weight: 300;
+  color: rgba(245, 245, 245, 0.75);
+  line-height: 1.25;
+}
+#app > .nav > .title-container > .subtext a {
+  text-decoration: none;
+  color: currentColor;
+}
+#app > .nav > .title-container > .subtext a:hover {
+  text-decoration: underline;
 }
 #app > .nav > .icons-container {
   display: flex;
