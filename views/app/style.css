@@ -223,11 +223,23 @@ body {
   flex-direction: column;
   gap: 8px;
 }
-#app > .avatars-container > .avatar-list .avatar-model > .info > .bottom > .note {
+#app > .avatars-container > .avatar-list .avatar-model > .info > .bottom > .extra {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+#app > .avatars-container > .avatar-list .avatar-model > .info > .bottom > .extra > .note, #app > .avatars-container > .avatar-list .avatar-model > .info > .bottom > .extra > .id {
   font-size: 12px;
   font-weight: 300;
   color: rgba(245, 245, 245, 0.5);
   line-height: 1.25;
+}
+#app > .avatars-container > .avatar-list .avatar-model > .info > .bottom > .extra > .id {
+  cursor: pointer;
+}
+#app > .avatars-container > .avatar-list .avatar-model > .info > .bottom > .extra > .id:hover {
+  text-decoration: underline;
 }
 #app > .avatars-container > .avatar-list .avatar-model > .info > .bottom > .buttons {
   display: flex;

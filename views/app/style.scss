@@ -255,11 +255,26 @@ body {
             flex-direction: column;
             gap: 8px;
 
-            & > .note {
-              font-size: 12px;
-              font-weight: 300;
-              color: rgba(245, 245, 245, 0.5);
-              line-height: 1.25;
+            & > .extra {
+              display: flex;
+              width: 100%;
+              justify-content: space-between;
+              align-items: center;
+
+              & > .note,
+              & > .id {
+                font-size: 12px;
+                font-weight: 300;
+                color: rgba(245, 245, 245, 0.5);
+                line-height: 1.25;
+              }
+
+              & > .id {
+                cursor: pointer;
+                &:hover {
+                  text-decoration: underline;
+                }
+              }
             }
 
             & > .buttons {

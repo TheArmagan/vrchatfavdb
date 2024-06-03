@@ -86,11 +86,13 @@
         </div>
 
         <div class="bottom">
-          <div v-if="data.avatar.note" class="note">
-            Note: {{data.avatar.note}}
-          </div>
-          <div class="note">
-            Id: {{data.avatar.id}}
+          <div class="extra">
+            <div v-if="data.avatar.note" class="note">
+              Note: {{data.avatar.note}}
+            </div>
+            <div class="id" @click="copyId">
+              Copy Avatar Id
+            </div>
           </div>
   
           <div class="buttons">

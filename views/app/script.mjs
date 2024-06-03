@@ -132,6 +132,10 @@ const componentScripts = {
         window.internalApp.selectedAvatarId = this.data.avatar.id;
         this.showUploaded = this.defaultShowUploaded;
       },
+      async copyId() {
+        await navigator.clipboard.writeText(this.data.avatar.id);
+        alert("Avatar Id copied!");
+      },
       uploadImage() {
         const accessKey = localStorage.getItem("VRCFAVDB;AccessKey");
         if (!accessKey) return alert("Please enter your access key first.");
