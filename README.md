@@ -14,8 +14,13 @@ I developed this project to exceed this limit and not to lose the avatars I favo
 - Add a notes to your avatars.
 - Set your avatar directly in the game from the browser.
 
+## To Use (Windows Executable)
+1. First, download the latest `vrchatfavdb-*.zip` file from [here](https://github.com/TheArmagan/vrchatfavdb/releases/).
+2. Extract the downloaded file to a folder.
+3. Run the `vrchatfavdb.exe` file in the extracted folder.
+4. A console screen will appear in front of you, then you can use the application by going to the `http://localhost:3000/app` address.
 
-## To Start the App
+## To Use (Global)
 1. To start the app you need to have Node.js installed on your machine. You can download it from [here](https://nodejs.org/en/).
 2. Clone the repository to your machine.
 3. Open a terminal in the project directory and run `npm install` to install the dependencies.
