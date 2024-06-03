@@ -53,6 +53,8 @@ async function updateAvatarsCache() {
       }
     };
   });
+  cachedAvatars.sort((a, b) => new Date(a.avatar.fetched_at) - new Date(b.avatar.fetched_at));
+  cachedAvatars.sort((a, b) => a.avatar.name.localeCompare(b.avatar.name));
   console.log("Updated avatars cache", cachedAvatars.length);
   return cachedAvatars;
 }
