@@ -130,8 +130,6 @@ dist
 .pnp.*
 
 
-public/avatars
-public/extras
-public/avatar_images
+data/
 
-access_key.txt
+vrchatfavdb_access_key.txt

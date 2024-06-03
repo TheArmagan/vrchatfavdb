@@ -4,10 +4,24 @@
 		"express": "^4.19.2",
 		"mime": "3.0.0"
 	},
-	"scripts": {
-		"start": "node index.js"
-	},
 	"main": "index.js",
+	"scripts": {
+		"start": "node ."
+	},
+	"bin": "index.js",
+	"name": "vrchatfavdb",
+	"description": "Never lose your favorite avatars in VRChat!",
+	"version": "0.1.0",
 	"license": "GPL-3.0-only",
-	"author": "Kıraç Armağan Önal"
+	"author": "Kıraç Armağan Önal",
+	"pkg": {
+		"assets": "views/**/*",
+		"targets": [
+			"node20-windows-x64"
+		],
+		"scripts": [
+			"./index.js"
+		],
+		"outputPath": "dist"
+	}
 }

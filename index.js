@@ -1,29 +1,39 @@
+//!/usr/bin/env node
+
 const express = require("express");
 const app = express();
 const fs = require("fs");
 const path = require("path");
 const aaq = require("async-and-quick");
 
-const PUBLIC_DIR = path.join(__dirname, "public");
-const AVATARS_DIR = path.join(PUBLIC_DIR, "avatars");
-const AVATAR_IMAGES_DIR = path.join(PUBLIC_DIR, "avatar_images");
-const EXTRAS_DIR = path.join(PUBLIC_DIR, "extras");
+process.title = "VRChat Favorite Database";
+console.log("VRChat Favorite Database by TheArmagan");
 
-if (!fs.existsSync(path.join(__dirname, "access_key.txt"))) fs.writeFileSync(path.join(__dirname, "access_key.txt"), "access_key_here", "utf8");
-const ACCESS_KEY = fs.readFileSync(path.join(__dirname, "access_key.txt"), "utf8").trim();
+const CWD = process.cwd();
+const DATA_DIR = path.join(CWD, "data");
+const AVATARS_DIR = path.join(DATA_DIR, "avatars");
+const AVATAR_IMAGES_DIR = path.join(DATA_DIR, "avatar_images");
+const EXTRAS_DIR = path.join(DATA_DIR, "extras");
+const VIEWS_DIR = path.join(__dirname, "views");
+
+if (!fs.existsSync(path.join(CWD, "./vrchatfavdb_access_key.txt"))) fs.writeFileSync(path.join(CWD, "./vrchatfavdb_access_key.txt"), "access_key_here", "utf8");
+const ACCESS_KEY = fs.readFileSync(path.join(CWD, "./vrchatfavdb_access_key.txt"), "utf8").trim();
 
 [
-  PUBLIC_DIR,
+  DATA_DIR,
   AVATARS_DIR,
   EXTRAS_DIR,
-  AVATAR_IMAGES_DIR
+  AVATAR_IMAGES_DIR,
+  VIEWS_DIR
 ].forEach(dir => {
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  try {
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  } catch { }
 });
 
+app.use(express.static(VIEWS_DIR));
+app.use("/data", express.static(DATA_DIR));
 
-
-app.use(express.static(PUBLIC_DIR));
 app.use(express.json({
   limit: "50mb"
 }));
@@ -35,7 +45,6 @@ async function downloadFile(url, dest) {
     return false;
   }
   await fs.promises.writeFile(dest, Buffer.from(await res.arrayBuffer()));
-  console.log("Downloaded file", url, dest);
   return true;
 }
 
@@ -55,7 +64,6 @@ async function updateAvatarsCache() {
   });
   cachedAvatars.sort((a, b) => a.avatar.name.localeCompare(b.avatar.name));
   cachedAvatars.sort((a, b) => new Date(b.avatar.fetched_at) > new Date(a.avatar.fetched_at) ? 1 : -1);
-  console.log("Updated avatars cache", cachedAvatars.length);
   return cachedAvatars;
 }
 
@@ -125,8 +133,6 @@ app.post("/api/favs/import", async (req, res) => {
   await updateAvatarsCache();
 
   const diff = cachedAvatars.length - oldCount;
-
-  console.log("Imported avatars", diff);
 
   return res.send({ ok: true, data: diff });
 });

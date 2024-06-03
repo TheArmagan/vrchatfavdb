@@ -23,4 +23,4 @@ I developed this project to exceed this limit and not to lose the avatars I favo
 5. Open your browser and go to `http://localhost:3000/app`.
 
 ## Extra
-- All your avatar data was stored at `public/avatars` and `public/avatar_images` folders. You can backup your data by copying these folders.
+- All your avatar data was stored at `data` folder. You can backup your data by copying this folder.

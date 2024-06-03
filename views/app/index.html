@@ -75,7 +75,7 @@
     <div class="avatar-model" :class="{ selected }" @click="select">
       <div 
         class="image" 
-        :style="`--image: url('/avatar_images/${data.avatar.id}/${showUploaded ? 'uploaded_image' : 'image'}.png');`" 
+        :style="`--image: url('/data/avatar_images/${data.avatar.id}/${showUploaded ? 'uploaded_image' : 'image'}.png');`" 
         @mouseenter="showUploaded = !defaultShowUploaded"
         @mouseleave="showUploaded = defaultShowUploaded"
       ></div>
