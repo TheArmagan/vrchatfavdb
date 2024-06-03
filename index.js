@@ -9,6 +9,7 @@ const AVATARS_DIR = path.join(PUBLIC_DIR, "avatars");
 const AVATAR_IMAGES_DIR = path.join(PUBLIC_DIR, "avatar_images");
 const EXTRAS_DIR = path.join(PUBLIC_DIR, "extras");
 
+if (!fs.existsSync(path.join(__dirname, "access_key.txt"))) fs.writeFileSync(path.join(__dirname, "access_key.txt"), "access_key_here", "utf8");
 const ACCESS_KEY = fs.readFileSync(path.join(__dirname, "access_key.txt"), "utf8").trim();
 
 [
@@ -19,6 +20,8 @@ const ACCESS_KEY = fs.readFileSync(path.join(__dirname, "access_key.txt"), "utf8
 ].forEach(dir => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
+
+
 
 app.use(express.static(PUBLIC_DIR));
 app.use(express.json({
