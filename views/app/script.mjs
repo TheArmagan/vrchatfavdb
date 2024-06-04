@@ -28,8 +28,17 @@ const app = window.app = Vue.createApp({
   computed: {
     searchedAvatars() {
       let avatars = this.avatars.slice();
-      let search = this.search.trim().toLowerCase();
-      if (search) avatars = avatars.filter(i => i.avatar.search_index.includes(search));
+      let search = this.search.trim().toLowerCase().split(/ +?/).map(i => ({
+        negative: i.startsWith("-"),
+        value: i.replace(/^-/, "")
+      })).filter(i => i.value.trim());
+      if (search.length) {
+        avatars = avatars.filter(i => {
+          return search.every(s => {
+            return i.avatar.search_index.includes(s.value) !== s.negative;
+          });
+        });
+      }
 
       switch (this.extraAvatarsFilters) {
         case "without_uploaded_image": {
