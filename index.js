@@ -5,9 +5,13 @@ const app = express();
 const fs = require("fs");
 const path = require("path");
 const aaq = require("async-and-quick");
+const cookieParser = require('set-cookie-parser');
+const crypto = require("crypto");
 
 process.title = "VRChat Favorite Database";
 console.log("VRChat Favorite Database by TheArmagan");
+
+const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36";
 
 const CWD = process.cwd();
 const DATA_DIR = path.join(CWD, "data");
@@ -68,7 +72,7 @@ async function updateAvatarsCache() {
 }
 
 function buildSearchIndex(avatar) {
-  return `${avatar.id} ${avatar.name} ${avatar.description} ${avatar.tags.join(" ")} ${avatar.author.name} ${avatar.id} ${avatar.author.id} ${avatar.note || ""}`.trim().toLowerCase();
+  return `${avatar.id} ${avatar.name} ${avatar.description} ${avatar.author.name} ${avatar.id} ${avatar.author.id} ${avatar.note || ""} ${avatar.import_note || ""} ${avatar.tags.join(" ")}`.trim().toLowerCase();
 }
 
 updateAvatarsCache();
@@ -85,7 +89,8 @@ app.post("/api/favs/import", async (req, res) => {
     "https://vrchat.com/api/1/avatars/favorites?n=300&offset=0",
     {
       headers: {
-        "cookie": vrChatCookie
+        "cookie": vrChatCookie,
+        "user-agent": USER_AGENT,
       }
     }
   );
@@ -118,7 +123,7 @@ app.post("/api/favs/import", async (req, res) => {
       created_at: avatar.created_at,
       updated_at: avatar.updated_at,
       fetched_at: fetchedAt,
-      note,
+      import_note: note
     };
     obj.search_index = buildSearchIndex(obj);
     resAvatars.push(obj);
@@ -138,22 +143,35 @@ app.post("/api/favs/import", async (req, res) => {
 });
 
 app.get("/api/favs", async (req, res) => {
-  const search = req.query.search?.trim()?.toLowerCase();
-  if (!search) return res.send({ ok: true, data: { avatars: cachedAvatars, total_count: cachedAvatars.length } });
-
-  return res.send({
-    ok: true,
-    data: {
-      avatars: cachedAvatars.filter(i => i.avatar.search_index.includes(search)),
-      total_count: cachedAvatars.length
-    }
-  });
+  res.send({ ok: true, data: cachedAvatars });
 });
 
 app.get("/api/avatars/:id", async (req, res) => {
   const avatar = cachedAvatars.find(i => i.avatar.id === req.params.id);
   if (!avatar) return res.status(404).send({ ok: false });
   return res.send({ ok: true, data: avatar });
+});
+
+app.patch("/api/avatars/:id", async (req, res) => {
+  const avatar = cachedAvatars.find(i => i.avatar.id === req.params.id);
+  if (!avatar) return res.status(404).send({ ok: false });
+
+  if (req.query.access_key !== ACCESS_KEY) {
+    return res.status(403).send({ ok: false, error: "Invalid access key" });
+  }
+
+  let obj = {
+    ...avatar.avatar,
+    ...req.body
+  }
+
+  obj.search_index = buildSearchIndex(obj);
+
+  await fs.promises.writeFile(path.join(AVATARS_DIR, `${avatar.avatar.id}.json`), JSON.stringify(obj, null, 2));
+
+  await updateAvatarsCache();
+
+  return res.send({ ok: true, data: obj });
 });
 
 app.delete("/api/avatars/:id", async (req, res) => {
@@ -206,7 +224,8 @@ app.post("/api/avatars/:id/select", async (req, res) => {
     {
       method: "PUT",
       headers: {
-        "cookie": vrChatCookie
+        "cookie": vrChatCookie,
+        "user-agent": USER_AGENT,
       }
     }
   );
@@ -231,6 +250,93 @@ app.get("/api/extras/last-import-date", async (req, res) => {
   if (!fs.existsSync(dir)) return res.send({ ok: true, data: null });
   const lastImportDate = JSON.parse(await fs.promises.readFile(dir, "utf8"))?.value;
   return res.send({ ok: true, data: lastImportDate });
+});
+
+app.post("/api/vrc/auth/step1", async (req, res) => {
+
+  const username = req.body.username;
+  const password = req.body.password;
+
+  if (!username || !password) {
+    return res.status(400).send({ ok: false, error: "Missing username or password" });
+  }
+
+  const apiRes = await fetch(
+    "https://vrchat.com/api/1/auth/user",
+    {
+      headers: {
+        "authorization": `Basic ${Buffer.from(`${username}:${password}`).toString("base64")}`,
+        "user-agent": USER_AGENT,
+      }
+    }
+  );
+
+  if (!apiRes.ok) {
+    let t = await apiRes.text();
+    console.error("Failed to authenticate", t);
+    res.status(apiRes.status).send({ ok: false, error: t.includes("Invalid Username") ? "Invalid username or password." : t });
+    return;
+  }
+
+  const json = await apiRes.json();
+
+  const cookies = cookieParser.parse(apiRes.headers.getSetCookie());
+
+  const authCookie = cookies.find(i => i.name === "auth");
+  return res.send({
+    ok: true,
+    data: {
+      auth: {
+        value: authCookie.value,
+        expires: authCookie.expires?.toISOString()
+      },
+      nextStep: json?.requiresTwoFactorAuth || []
+    }
+  });
+});
+
+app.post("/api/vrc/auth/step2", async (req, res) => {
+
+  const authCookie = req.body.authCookie;
+  const code = req.body.code;
+  const type = req.body.type?.toLowerCase();
+
+  if (!authCookie || !code || !["totp", "otp", "emailotp"].includes(type)) {
+    return res.status(400).send({ ok: false, error: "Missing authCookie, code or invalid type." });
+  }
+
+  const apiRes = await fetch(
+    `https://vrchat.com/api/1/auth/twofactorauth/${type}/verify`,
+    {
+      method: "POST",
+      headers: {
+        "cookie": `auth=${authCookie}`,
+        "content-type": "application/json",
+        "user-agent": USER_AGENT,
+      },
+      body: JSON.stringify({ code })
+    }
+  );
+
+  if (!apiRes.ok) {
+    let t = await apiRes.text();
+    console.error("Failed to authenticate", t);
+    res.status(apiRes.status).send({ ok: false, error: t });
+    return;
+  }
+
+  const cookies = cookieParser.parse(apiRes.headers.getSetCookie());
+
+  const twoFactorAuthCookie = cookies.find(i => i.name === "twoFactorAuth");
+  return res.send({
+    ok: true,
+    data: {
+      twoFactorAuth: {
+        value: twoFactorAuthCookie.value,
+        expires: twoFactorAuthCookie.expires?.toISOString()
+      }
+    }
+  });
 });
 
 app.listen(3000, () => {

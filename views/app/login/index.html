@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - VRChat Favorite Database</title>
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div id="app">
+    <div class="nav">
+      <div class="title-container">
+        <div class="title">
+          VRChat Favorite Database
+        </div>
+        <div class="subtext">
+          Generate VRChat Cookie
+        </div>
+      </div>
+    </div>
+    <div class="controls-tab">
+      <div class="title-container">
+        Authentication
+      </div>
+      <div class="controls">
+        <div class="control" :class="{'disabled': currentStep === 2}">
+          <div class="info">
+            <div class="title">Login</div>
+            <div class="description">
+              Username input can be your VRChat username or email.
+              Password input is your VRChat password.
+            </div>
+          </div>
+          <div class="input-container vertical">
+            <input v-model="username" type="text" placeholder="Username.." />
+            <input v-model="password" type="password" placeholder="Password.." />
+          </div>
+        </div>
+        <div class="control" :class="{'disabled': currentStep === 2}">
+          <div class="input-container">
+            <button @click="loginStep1">
+              {{loadingStep1 ? 'Loading..' : 'Login'}}
+            </button>
+          </div>
+        </div>
+        <div v-if="currentStep === 2" class="control">
+          <div class="info">
+            <div class="title">Two Factor Authentication</div>
+            <div class="description">
+              {{otpMessage}}
+            </div>
+          </div>
+          <div class="input-container">
+            <select v-model="otpType" title="Two Factor Authentication Type">
+              <option v-for="t in otpTypes" :key="t" :value="t">{{otpTypeMap[t]}}</option>
+            </select>
+            <input v-model="otpCode" type="number" placeholder="Code.." />
+            <button @click="loginStep2">
+              {{loadingStep2 ? 'Loading..' : 'Submit'}}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.27/vue.global.min.js"></script>
+  <script src="./script.mjs" type="module"></script>
+</body>
+</html>

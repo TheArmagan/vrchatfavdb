@@ -1,63 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-* {
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
-  color: whitesmoke;
-  outline: none;
-  font-family: "Poppins", sans-serif;
-}
-
-html,
-body,
-#app {
-  height: 100%;
-  width: 100%;
-}
-
-body {
-  background-color: #0e1013;
-  background-image: linear-gradient(135deg, #0e1013 25%, #07242b 75%);
-  background-attachment: fixed;
-}
-
-#app {
-  display: flex;
-  flex-direction: column;
-  padding: 16px;
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto;
-  gap: 16px;
-}
-#app > .nav {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
-}
-#app > .nav > .title-container {
-  display: flex;
-  flex-direction: column;
-}
-#app > .nav > .title-container > .title {
-  font-size: 28px;
-  font-weight: 600;
-  line-height: 1.25;
-}
-#app > .nav > .title-container > .subtext {
-  font-size: 14px;
-  font-weight: 300;
-  color: rgba(245, 245, 245, 0.75);
-  line-height: 1.25;
-}
-#app > .nav > .title-container > .subtext a {
-  text-decoration: none;
-  color: currentColor;
-}
-#app > .nav > .title-container > .subtext a:hover {
-  text-decoration: underline;
-}
 #app > .nav > .icons-container {
   display: flex;
   align-items: center;
@@ -79,51 +19,6 @@ body {
   width: 24px;
   height: 24px;
   color: whitesmoke;
-}
-#app > .controls > .controls-tab {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-#app > .controls > .controls-tab > .title-container {
-  font-size: 18px;
-  font-weight: 500;
-}
-#app > .controls > .controls-tab > .controls {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-#app > .controls > .controls-tab > .controls .control {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding-left: 8px;
-  border-left: 2px solid #191e24;
-  border-radius: 4px;
-}
-#app > .controls > .controls-tab > .controls .control > .info {
-  display: flex;
-  flex-direction: column;
-  max-width: 500px;
-}
-#app > .controls > .controls-tab > .controls .control > .info > .title {
-  font-size: 16px;
-  font-weight: 500;
-}
-#app > .controls > .controls-tab > .controls .control > .info > .description {
-  font-size: 14px;
-  font-weight: 300;
-  color: rgba(245, 245, 245, 0.75);
-  line-height: 1.25;
-}
-#app > .controls > .controls-tab > .controls .control .input-container {
-  width: -moz-fit-content;
-  width: fit-content;
-  max-width: 500px;
-  display: flex;
-  gap: 8px;
-  align-items: center;
 }
 #app > .avatars-container {
   display: flex;
@@ -164,22 +59,33 @@ body {
 #app > .avatars-container > .avatar-list .avatar-model {
   background-color: #0e1013;
   border: 2px solid #191e24;
-  transition: all 100ms ease-in-out;
+  transition: all 100ms ease-in-out, width 0ms linear, max-width 0ms linear;
   padding: 8px;
   border-radius: 4px;
   color: rgba(245, 245, 245, 0.75);
-  height: 500px;
+  height: 450px;
   width: 220px;
   max-width: 220px;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  gap: 18px;
 }
 #app > .avatars-container > .avatar-list .avatar-model:hover, #app > .avatars-container > .avatar-list .avatar-model.selected {
   border: 2px solid #082b34;
   color: whitesmoke;
 }
-#app > .avatars-container > .avatar-list .avatar-model > .image {
+#app > .avatars-container > .avatar-list .avatar-model.extended {
+  width: 456px;
+  max-width: 456px;
+}
+#app > .avatars-container > .avatar-list .avatar-model > .main-section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 8px;
+  width: 208px;
+  max-width: 208px;
+}
+#app > .avatars-container > .avatar-list .avatar-model > .main-section > .image {
   width: 200px;
   min-width: 200px;
   height: 200px;
@@ -191,25 +97,25 @@ body {
   background-repeat: no-repeat;
   background-image: var(--image);
 }
-#app > .avatars-container > .avatar-list .avatar-model > .info {
+#app > .avatars-container > .avatar-list .avatar-model > .main-section > .info {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
   gap: 8px;
 }
-#app > .avatars-container > .avatar-list .avatar-model > .info > .title {
+#app > .avatars-container > .avatar-list .avatar-model > .main-section > .info > .title {
   display: flex;
   flex-direction: column;
 }
-#app > .avatars-container > .avatar-list .avatar-model > .info > .title > .name {
+#app > .avatars-container > .avatar-list .avatar-model > .main-section > .info > .title > .name {
   font-size: 20px;
   font-weight: 600;
   text-wrap: wrap;
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
-#app > .avatars-container > .avatar-list .avatar-model > .info > .title > .author {
+#app > .avatars-container > .avatar-list .avatar-model > .main-section > .info > .title > .author {
   font-size: 12px;
   font-weight: 300;
   color: rgba(245, 245, 245, 0.75);
@@ -218,110 +124,52 @@ body {
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
-#app > .avatars-container > .avatar-list .avatar-model > .info > .bottom {
+#app > .avatars-container > .avatar-list .avatar-model > .main-section > .info > .bottom {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
-#app > .avatars-container > .avatar-list .avatar-model > .info > .bottom > .extra {
+#app > .avatars-container > .avatar-list .avatar-model > .main-section > .info > .bottom > .extra {
   display: flex;
   width: 100%;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
 }
-#app > .avatars-container > .avatar-list .avatar-model > .info > .bottom > .extra > .note, #app > .avatars-container > .avatar-list .avatar-model > .info > .bottom > .extra > .id {
+#app > .avatars-container > .avatar-list .avatar-model > .main-section > .info > .bottom > .extra > .note {
   font-size: 12px;
   font-weight: 300;
   color: rgba(245, 245, 245, 0.5);
   line-height: 1.25;
 }
-#app > .avatars-container > .avatar-list .avatar-model > .info > .bottom > .extra > .id {
-  cursor: pointer;
-}
-#app > .avatars-container > .avatar-list .avatar-model > .info > .bottom > .extra > .id:hover {
-  text-decoration: underline;
-}
-#app > .avatars-container > .avatar-list .avatar-model > .info > .bottom > .buttons {
+#app > .avatars-container > .avatar-list .avatar-model > .main-section > .info > .bottom > .buttons {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
-
-input[type=text],
-input[type=password],
-input[type=number],
-textarea,
-select {
-  background-color: #0e1013;
-  border: 2px solid #191e24;
-  transition: all 100ms ease-in-out;
-  padding: 4px 8px;
-  border-radius: 4px;
-  color: rgba(245, 245, 245, 0.75);
-  font-size: 14px;
+#app > .avatars-container > .avatar-list .avatar-model > .extended-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: space-between;
+  width: 208px;
+  max-width: 208px;
 }
-input[type=text]:hover, input[type=text]:focus,
-input[type=password]:hover,
-input[type=password]:focus,
-input[type=number]:hover,
-input[type=number]:focus,
-textarea:hover,
-textarea:focus,
-select:hover,
-select:focus {
-  border: 2px solid #082b34;
-  color: whitesmoke;
+#app > .avatars-container > .avatar-list .avatar-model > .extended-section > .controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
-input[type=text]:disabled, input[type=text].disabled,
-input[type=password]:disabled,
-input[type=password].disabled,
-input[type=number]:disabled,
-input[type=number].disabled,
-textarea:disabled,
-textarea.disabled,
-select:disabled,
-select.disabled {
-  opacity: 0.5;
-  pointer-events: none;
+#app > .avatars-container > .avatar-list .avatar-model > .extended-section > .controls .control {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
-
-option {
-  background-color: #0e1013;
-  color: whitesmoke;
-  font-size: 14px;
-}
-
-button {
-  padding: 4px 8px;
-  background-color: #0e1013;
-  border: 2px solid #191e24;
-  border-radius: 4px;
-  color: rgba(245, 245, 245, 0.95);
-  cursor: pointer;
-  transition: all 100ms ease-in-out;
-  font-size: 14px;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-          user-select: none;
-}
-button:hover {
-  background-color: #082b34;
-  border: 2px solid #082b34;
-  color: whitesmoke;
-  scale: 1.05;
-}
-button:active {
-  scale: 0.95;
-}
-button:disabled, button.disabled {
-  opacity: 0.5;
-  pointer-events: none;
-}
-button.small {
-  padding: 2px 4px;
+#app > .avatars-container > .avatar-list .avatar-model > .extended-section > .controls .control > .label {
   font-size: 12px;
+  font-weight: 400;
+  color: rgba(245, 245, 245, 0.75);
 }
-
-template {
-  display: none;
+#app > .avatars-container > .avatar-list .avatar-model > .extended-section > .buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }

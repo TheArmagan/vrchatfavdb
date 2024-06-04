@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VRChat Favorite Database</title>
+  <link rel="stylesheet" href="/assets/main.css">
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
@@ -18,10 +19,15 @@
             <div class="title">VR Chat Cookie</div>
             <div class="description">
               Your VR Chat Cookie is required to access your favorite avatars. You can find it in your browser's developer tools at network tab.
+              Or you can easily generate one using the button below.
             </div>
           </div>
           <div class="input-container">
             <input v-model="cookie" type="password" placeholder="Cookie.." />
+            <a href="/app/login">
+              <button>Generate</button>
+            </a>
+            <button v-if="cookie.trim()" @click="copyCookie">Copy</button>
           </div>
         </div>
         <div class="control">
@@ -46,9 +52,9 @@
       <div class="controls">
         <div class="control">
           <div class="info">
-            <div class="title">Note</div>
+            <div class="title">Impot Note</div>
             <div class="description">
-              You can add a note to your import to remember why you imported these avatars. (Optional)
+              You can add a note to your import to remember why you imported these avatars.
             </div>
           </div>
           <div class="input-container">
@@ -72,34 +78,53 @@
     </div>
   </template>
   <template component="avatar-model">
-    <div class="avatar-model" :class="{ selected }" @click="select">
-      <div 
-        class="image" 
-        :style="`--image: url('/data/avatar_images/${data.avatar.id}/${showUploaded ? 'uploaded_image' : 'image'}.png');`" 
-        @mouseenter="showUploaded = !defaultShowUploaded"
-        @mouseleave="showUploaded = defaultShowUploaded"
-      ></div>
-      <div class="info">
-        <div class="title">
-          <div class="name">{{data.avatar.name}}</div>
-          <div class="author">by {{data.avatar.author.name}}</div>
-        </div>
+    <div class="avatar-model" :class="{ selected, extended }" @click="select">
+      <div class="main-section">
+        <div 
+          class="image" 
+          :style="`--image: url('/data/avatar_images/${data.avatar.id}/${showUploaded ? 'uploaded_image' : 'image'}.png');`" 
+          @mouseenter="showUploaded = !defaultShowUploaded"
+          @mouseleave="showUploaded = defaultShowUploaded"
+        ></div>
+        <div class="info">
+          <div class="title">
+            <div class="name">{{data.avatar.name}}</div>
+            <div class="author">by {{data.avatar.author.name}}</div>
+          </div>
 
-        <div class="bottom">
-          <div class="extra">
-            <div v-if="data.avatar.note" class="note">
-              Note: {{data.avatar.note}}
+          <div class="bottom">
+            <div class="extra">
+              <div v-if="data.avatar.note" class="note">
+                Note: {{data.avatar.note}}
+              </div>
+              <div v-if="data.avatar.import_note" class="note">
+                Import Note: {{data.avatar.import_note}}
+              </div>
             </div>
-            <div class="id" @click="copyId">
-              Copy Avatar Id
+    
+            <div class="buttons">
+              <!-- <button class="small" @click="uploadImage">Upload Image</button>
+              <button class="small" @click="deleteAvatar">Delete</button> -->
+              <button class="small" @click="extended = !extended">
+                {{ extended ? 'Less' : 'More' }}
+              </button>
+              <button class="small" @click="copyId">Copy Id</button>
+              <button @click="selectAvatar">Select</button>
             </div>
           </div>
-  
-          <div class="buttons">
-            <button class="small" @click="uploadImage">Upload Image</button>
-            <button class="small" @click="deleteAvatar">Delete</button>
-            <button @click="selectAvatar">Select</button>
+        </div>
+      </div>
+      <div v-if="extended" class="extended-section">
+        <div class="controls">
+          <div class="control">
+            <div class="label">Update Note:</div>
+            <input v-model="note" type="text" placeholder="Note..">
+            <button class="small" @click="saveNote">Save Note</button>
           </div>
+        </div>
+        <div class="buttons">
+          <button class="small" @click="deleteAvatar">Delete</button>
+          <button @click="uploadImage">Upload Image</button>
         </div>
       </div>
     </div>
@@ -111,7 +136,7 @@
           VRChat Favorite Database
         </div>
         <div class="subtext">
-          by <a href="https://github.com/TheArmagan">TheArmagan</a>
+          v0.1.4 by <a href="https://github.com/TheArmagan">TheArmagan</a>
         </div>
       </div>
       <div class="icons-container">
@@ -142,12 +167,12 @@
           <div class="title">
             Avatars
           </div>
-          <div v-if="!searching" class="count">{{ avatars.length }}/{{ totalAvatars }} avatars</div>
-          <div v-if="searching" class="count">Searching...</div>
+          <div v-if="!searching" class="count">{{ searchedAvatars.length }}/{{ avatars.length }} avatars</div>
+          <div v-if="searching" class="count">Loading..</div>
         </div>
         <div class="search-container">
-          <input v-model="search" type="text" placeholder="Search..." @input="debouncedUpdateAvatars">
-          <select v-model="extraAvatarsFilters" title="Extra Filters" @change="debouncedUpdateAvatars">
+          <input v-model="search" type="text" placeholder="Search...">
+          <select v-model="extraAvatarsFilters" title="Extra Filters">
             <option value="all">All</option>
             <option value="without_uploaded_image">Without Uploaded Image</option>
             <option value="with_uploaded_image">With Uploaded Image</option>
@@ -155,7 +180,7 @@
         </div>
       </div>
       <div class="avatar-list">
-        <avatar-model v-for="data in avatars" :key="data.avatar.id" :data="data" :selected="selectedAvatarId === data.avatar.id"></avatar-model>
+        <avatar-model v-for="data in searchedAvatars" :key="data.avatar.id" :data="data" :selected="selectedAvatarId === data.avatar.id"></avatar-model>
       </div>
     </div>
   </div>

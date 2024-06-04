@@ -1,8 +1,10 @@
+const LS_COOKIE = "VRCFAVDB;App;Cookie";
+const LS_ACCESS_KEY = "VRCFAVDB;App;AccessKey";
+
 const app = window.app = Vue.createApp({
   data() {
     return {
       avatars: [],
-      totalAvatars: 0,
       search: "",
       selectedAvatar: null,
       selectedControlsTab: "",
@@ -16,19 +18,18 @@ const app = window.app = Vue.createApp({
     this.updateAvatars();
   },
   methods: {
-    getCookie() {
-      return localStorage.getItem("VRCFAVDB;Cookie") || "";
-    },
-    getAccessKey() {
-      return localStorage.getItem("VRCFAVDB;AccessKey") || "";
-    },
     async updateAvatars() {
       this.searching = true;
-      let search = this.search;
-      this.avatars = [];
-      let { avatars, total_count } = (await fetch(`/api/favs${search?.trim() ? `?search=${encodeURIComponent(search.trim())}` : ""}`).then(res => res.json())).data;
-
-      this.totalAvatars = total_count;
+      let avatars = (await fetch("/api/favs").then(res => res.json())).data;
+      this.avatars = avatars;
+      this.searching = false;
+    },
+  },
+  computed: {
+    searchedAvatars() {
+      let avatars = this.avatars.slice();
+      let search = this.search.trim().toLowerCase();
+      if (search) avatars = avatars.filter(i => i.avatar.search_index.includes(search));
 
       switch (this.extraAvatarsFilters) {
         case "without_uploaded_image": {
@@ -41,12 +42,8 @@ const app = window.app = Vue.createApp({
         }
       }
 
-      this.avatars = avatars;
-      this.searching = false;
-    },
-    debouncedUpdateAvatars: debounce(function () {
-      this.updateAvatars();
-    }, 500),
+      return avatars;
+    }
   }
 });
 
@@ -60,15 +57,21 @@ const componentScripts = {
     },
     watch: {
       cookie(value) {
-        localStorage.setItem("VRCFAVDB;Cookie", value);
+        localStorage.setItem(LS_COOKIE, value);
       },
       accessKey(value) {
-        localStorage.setItem("VRCFAVDB;AccessKey", value);
+        localStorage.setItem(LS_ACCESS_KEY, value);
       }
     },
     mounted() {
-      this.cookie = localStorage.getItem("VRCFAVDB;Cookie") || "";
-      this.accessKey = localStorage.getItem("VRCFAVDB;AccessKey") || "";
+      this.cookie = localStorage.getItem(LS_COOKIE) || "";
+      this.accessKey = localStorage.getItem(LS_ACCESS_KEY) || "";
+    },
+    methods: {
+      copyCookie() {
+        navigator.clipboard.writeText(this.cookie);
+        alert("Cookie copied!");
+      }
     }
   },
   "import-tab": {
@@ -88,9 +91,9 @@ const componentScripts = {
         this.lastImportDateString = data ? new Date(data).toLocaleString() : "Never imported";
       },
       async importAvatars() {
-        const cookie = localStorage.getItem("VRCFAVDB;Cookie");
+        const cookie = localStorage.getItem(LS_COOKIE);
         if (!cookie) return alert("Please enter your VRChat cookie first.");
-        const accessKey = localStorage.getItem("VRCFAVDB;AccessKey");
+        const accessKey = localStorage.getItem(LS_ACCESS_KEY);
         if (!accessKey) return alert("Please enter your access key first.");
 
         const note = this.note;
@@ -120,24 +123,53 @@ const componentScripts = {
       return {
         loading: false,
         defaultShowUploaded: false,
-        showUploaded: false
+        showUploaded: false,
+        extended: false,
+        note: ""
       };
     },
     mounted() {
       this.defaultShowUploaded = this.data.images.has_uploaded_image;
       this.showUploaded = this.defaultShowUploaded;
+      this.note = this.data.avatar.note || "";
     },
     methods: {
       select() {
         window.internalApp.selectedAvatarId = this.data.avatar.id;
         this.showUploaded = this.defaultShowUploaded;
       },
+      async saveNote() {
+        const accessKey = localStorage.getItem(LS_ACCESS_KEY);
+        if (!accessKey) return alert("Please enter your access key first.");
+
+        const res = await fetch(`/api/avatars/${this.data.avatar.id}?access_key=${encodeURIComponent(accessKey)}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ note: this.note })
+        });
+
+        let json = await res.json();
+        if (!res.ok) {
+          alert(`Failed to save note: ${json.error || "Unknown error"}`);
+          return;
+        }
+
+        let av = window.internalApp.avatars.find(i => i.avatar.id === this.data.avatar.id);
+        if (av) {
+          av.avatar.note = json.data.note;
+          av.avatar.search_index = json.data.search_index;
+        }
+
+        alert("Note saved successfully!");
+      },
       async copyId() {
         await navigator.clipboard.writeText(this.data.avatar.id);
         alert("Avatar Id copied!");
       },
       uploadImage() {
-        const accessKey = localStorage.getItem("VRCFAVDB;AccessKey");
+        const accessKey = localStorage.getItem(LS_ACCESS_KEY);
         if (!accessKey) return alert("Please enter your access key first.");
 
         if (!confirm("Do you really want to upload image?")) return;
@@ -172,7 +204,7 @@ const componentScripts = {
         input.click();
       },
       async deleteAvatar() {
-        const accessKey = localStorage.getItem("VRCFAVDB;AccessKey");
+        const accessKey = localStorage.getItem(LS_ACCESS_KEY);
         if (!accessKey) return alert("Please enter your access key first.");
 
         if (!confirm("Do you really want to delete image?")) return;
@@ -193,7 +225,7 @@ const componentScripts = {
         window.internalApp.updateAvatars();
       },
       async selectAvatar() {
-        const cookie = localStorage.getItem("VRCFAVDB;Cookie");
+        const cookie = localStorage.getItem(LS_COOKIE);
         if (!cookie) return alert("Please enter your VRChat cookie first.");
 
         const res = await fetch(`/api/avatars/${this.data.avatar.id}/select`, {
@@ -225,20 +257,6 @@ document.querySelectorAll("[component]").forEach((el) => {
 });
 
 app.mount("#app");
-
-function debounce(func, wait) {
-  let timeout;
-  return function () {
-    const context = this;
-    const args = arguments;
-    const later = function () {
-      timeout = null;
-      func.apply(context, args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
-}
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {

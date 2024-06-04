@@ -2,7 +2,8 @@
 	"dependencies": {
 		"async-and-quick": "^1.0.2",
 		"express": "^4.19.2",
-		"mime": "3.0.0"
+		"mime": "3.0.0",
+		"set-cookie-parser": "^2.6.0"
 	},
 	"main": "index.js",
 	"scripts": {
@@ -11,7 +12,7 @@
 	"bin": "index.js",
 	"name": "vrchatfavdb",
 	"description": "Never lose your favorite avatars in VRChat!",
-	"version": "0.1.0",
+	"version": "0.1.4",
 	"license": "GPL-3.0-only",
 	"author": "Kıraç Armağan Önal",
 	"pkg": {
@@ -23,5 +24,8 @@
 			"./index.js"
 		],
 		"outputPath": "dist"
+	},
+	"devDependencies": {
+		"@types/set-cookie-parser": "^2.4.7"
 	}
 }

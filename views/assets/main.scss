@@ -1,0 +1,205 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  color: whitesmoke;
+  outline: none;
+  font-family: "Poppins", sans-serif;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background-color: #0e1013;
+  background-image: linear-gradient(135deg, #0e1013 25%, #07242b 75%);
+  background-attachment: fixed;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  gap: 16px;
+
+  & > .nav {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+
+    & > .title-container {
+      display: flex;
+      flex-direction: column;
+
+      & > .title {
+        font-size: 28px;
+        font-weight: 600;
+        line-height: 1.25;
+      }
+
+      & > .subtext {
+        font-size: 14px;
+        font-weight: 300;
+        color: rgba(245, 245, 245, 0.75);
+        line-height: 1.25;
+
+        a {
+          text-decoration: none;
+          color: currentColor;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+
+  .controls-tab {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    & > .title-container {
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    & > .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      .control {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        padding-left: 8px;
+        border-left: 2px solid #191e24;
+        border-radius: 4px;
+
+        &.disabled {
+          opacity: 0.5;
+          pointer-events: none;
+        }
+
+        & > .info {
+          display: flex;
+          flex-direction: column;
+          max-width: 500px;
+
+          & > .title {
+            font-size: 16px;
+            font-weight: 500;
+          }
+
+          & > .description {
+            font-size: 14px;
+            font-weight: 300;
+            color: rgba(245, 245, 245, 0.75);
+            line-height: 1.25;
+          }
+        }
+
+        .input-container {
+          width: fit-content;
+          max-width: 500px;
+          display: flex;
+          gap: 8px;
+          align-items: center;
+
+          &.vertical {
+            flex-direction: column;
+            gap: 4px;
+          }
+        }
+      }
+    }
+  }
+}
+
+input[type="text"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+  background-color: #0e1013;
+  border: 2px solid #191e24;
+  transition: all 100ms ease-in-out;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: rgba(245, 245, 245, 0.75);
+  font-size: 14px;
+
+  &:hover,
+  &:focus {
+    border: 2px solid #082b34;
+    color: whitesmoke;
+  }
+
+  &:disabled,
+  &.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  &.small {
+    padding: 2px 4px;
+    font-size: 12px;
+  }
+}
+
+option {
+  background-color: #0e1013;
+  color: whitesmoke;
+  font-size: 14px;
+}
+
+button {
+  padding: 4px 8px;
+  background-color: #0e1013;
+  border: 2px solid #191e24;
+  border-radius: 4px;
+  color: rgba(245, 245, 245, 0.95);
+  cursor: pointer;
+  transition: all 100ms ease-in-out;
+  font-size: 14px;
+  user-select: none;
+
+  &:hover {
+    background-color: #082b34;
+    border: 2px solid #082b34;
+    color: whitesmoke;
+    scale: 1.05;
+  }
+
+  &:active {
+    scale: 0.95;
+  }
+
+  &:disabled,
+  &.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  &.small {
+    padding: 2px 4px;
+    font-size: 12px;
+  }
+}
+
+template {
+  display: none;
+}
