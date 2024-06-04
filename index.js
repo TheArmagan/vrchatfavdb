@@ -6,7 +6,6 @@ const fs = require("fs");
 const path = require("path");
 const aaq = require("async-and-quick");
 const cookieParser = require('set-cookie-parser');
-const crypto = require("crypto");
 
 process.title = "VRChat Favorite Database";
 console.log("VRChat Favorite Database by TheArmagan");
