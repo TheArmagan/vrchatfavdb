@@ -11,8 +11,10 @@ I developed this project to exceed this limit and not to lose the avatars I favo
 - Easily import your avatars you favorited in VRChat.
 - Save as many avatars as you want.
 - Set a custom avatar preview for your avatars.
-- Add a notes to your avatars.
+- Add a import notes and notes to your avatars.
+- Keyword based search for your avatars. Supports negative keywords.
 - Set your avatar directly in the game from the browser.
+- Access key support for secure access to your database.
 
 ## To Use (Windows Executable)
 1. First, download the latest `vrchatfavdb-*.zip` file from [here](https://github.com/TheArmagan/vrchatfavdb/releases/).
