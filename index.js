@@ -243,6 +243,9 @@ app.post("/api/avatars/:id/select", async (req, res) => {
 });
 
 app.post("/api/cache/update", async (req, res) => {
+  if (req.query.access_key !== ACCESS_KEY) {
+    return res.status(403).send({ ok: false, error: "Invalid access key" });
+  }
   await updateAvatarsCache();
   return res.send({ ok: true });
 });
