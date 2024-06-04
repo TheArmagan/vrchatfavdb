@@ -20,6 +20,7 @@ const app = window.app = Vue.createApp({
   methods: {
     async updateAvatars() {
       this.searching = true;
+      this.avatars = [];
       let avatars = (await fetch("/api/favs").then(res => res.json())).data;
       this.avatars = avatars;
       this.searching = false;
