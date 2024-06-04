@@ -31,3 +31,5 @@ I developed this project to exceed this limit and not to lose the avatars I favo
 
 ## Extra
 - All your avatar data was stored at `data` folder. You can backup your data by copying this folder.
+- You can checkout my [VRChat Favorite Database](https://vrchatfavdb.armagan.rest/app/) instance from [here](https://vrchatfavdb.armagan.rest/app/)!
+
