@@ -49,6 +49,14 @@ const app = window.app = Vue.createApp({
           avatars = avatars.filter(i => i.images.has_uploaded_image);
           break;
         }
+        case "without_note": {
+          avatars = avatars.filter(i => !i.avatar.note);
+          break;
+        }
+        case "with_note": {
+          avatars = avatars.filter(i => i.avatar.note);
+          break;
+        }
       }
 
       return avatars;
