@@ -110,8 +110,11 @@ app.post("/api/favs/import", async (req, res) => {
   let fetchedAt = new Date().toISOString();
   await aaq.quickForEach(avatars, async (avatar) => {
     const avatarImagesDir = path.join(AVATAR_IMAGES_DIR, avatar.id);
+    const jsonPath = path.join(AVATARS_DIR, `${avatar.id}.json`);
     if (!fs.existsSync(avatarImagesDir)) await fs.promises.mkdir(avatarImagesDir, { recursive: true });
+    const ogJson = fs.existsSync(jsonPath) ? JSON.parse(await fs.promises.readFile(jsonPath, "utf8")) : {};
     let obj = {
+      ...ogJson,
       id: avatar.id,
       author: {
         id: avatar.authorId,
@@ -129,7 +132,7 @@ app.post("/api/favs/import", async (req, res) => {
     resAvatars.push(obj);
     await Promise.all([
       downloadFile(avatar.imageUrl, path.join(avatarImagesDir, "image.png")),
-      fs.promises.writeFile(path.join(AVATARS_DIR, `${avatar.id}.json`), JSON.stringify(obj, null, 2))
+      fs.promises.writeFile(jsonPath, JSON.stringify(obj, null, 2))
     ]);
   });
 
@@ -339,6 +342,6 @@ app.post("/api/vrc/auth/step2", async (req, res) => {
   });
 });
 
-app.listen(3000, () => {
-  console.log("http://localhost:3000/app");
+app.listen(parseInt(process.env.PORT || 3000), () => {
+  console.log(`http://localhost:${process.env.PORT || 3000}/app`);
 });
