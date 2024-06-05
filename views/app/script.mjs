@@ -143,18 +143,17 @@ const componentScripts = {
         showUploaded: false,
         extended: false,
         note: "",
-        rndId: ""
+        imageRndId: ""
       };
     },
     mounted() {
-      this.updateRndId();
       this.defaultShowUploaded = this.data.images.has_uploaded_image;
       this.showUploaded = this.defaultShowUploaded;
       this.note = this.data.avatar.note || "";
     },
     methods: {
-      updateRndId() {
-        this.rndId = Math.random().toString(36).slice(2);
+      updateImageRndId() {
+        this.imageRndId = Math.random().toString(36).slice(2);
       },
       select() {
         window.internalApp.selectedAvatarId = this.data.avatar.id;
@@ -222,7 +221,7 @@ const componentScripts = {
 
           alert("Image uploaded successfully!");
           window.internalApp.updateAvatars();
-          this.updateRndId();
+          this.updateImageRndId();
         };
         input.click();
       },
