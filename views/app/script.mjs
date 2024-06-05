@@ -147,11 +147,19 @@ const componentScripts = {
       };
     },
     mounted() {
-      this.defaultShowUploaded = this.data.images.has_uploaded_image;
-      this.showUploaded = this.defaultShowUploaded;
-      this.note = this.data.avatar.note || "";
+      this.dataChanged();
+    },
+    watch: {
+      data() {
+        this.dataChanged();
+      }
     },
     methods: {
+      dataChanged() {
+        this.defaultShowUploaded = this.data.images.has_uploaded_image;
+        this.showUploaded = this.defaultShowUploaded;
+        this.note = this.data.avatar.note || "";
+      },
       updateImageRndId() {
         this.imageRndId = Math.random().toString(36).slice(2);
       },
