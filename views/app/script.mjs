@@ -20,7 +20,6 @@ const app = window.app = Vue.createApp({
   methods: {
     async updateAvatars() {
       this.searching = true;
-      this.avatars = [];
       let avatars = (await fetch("/api/favs").then(res => res.json())).data;
       this.avatars = avatars;
       this.searching = false;
@@ -143,17 +142,19 @@ const componentScripts = {
         defaultShowUploaded: false,
         showUploaded: false,
         extended: false,
-        note: ""
+        note: "",
+        rndId: ""
       };
     },
     mounted() {
+      this.updateRndId();
       this.defaultShowUploaded = this.data.images.has_uploaded_image;
       this.showUploaded = this.defaultShowUploaded;
       this.note = this.data.avatar.note || "";
     },
     methods: {
-      randomId() {
-        return Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+      updateRndId() {
+        this.rndId = Math.random().toString(36).slice(2);
       },
       select() {
         window.internalApp.selectedAvatarId = this.data.avatar.id;
@@ -221,6 +222,7 @@ const componentScripts = {
 
           alert("Image uploaded successfully!");
           window.internalApp.updateAvatars();
+          this.updateRndId();
         };
         input.click();
       },
