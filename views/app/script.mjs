@@ -152,6 +152,9 @@ const componentScripts = {
       this.note = this.data.avatar.note || "";
     },
     methods: {
+      randomId() {
+        return Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+      },
       select() {
         window.internalApp.selectedAvatarId = this.data.avatar.id;
         this.showUploaded = this.defaultShowUploaded;

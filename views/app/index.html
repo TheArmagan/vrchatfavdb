@@ -85,7 +85,7 @@
       <div class="main-section">
         <div 
           class="image" 
-          :style="`--image: url('/data/avatar_images/${data.avatar.id}/${showUploaded ? 'uploaded_image' : 'image'}.png');`" 
+          :style="`--image: url('/data/avatar_images/${data.avatar.id}/${showUploaded ? 'uploaded_image' : 'image'}.png?_=${randomId()}');`" 
           @mouseenter="showUploaded = !defaultShowUploaded"
           @mouseleave="showUploaded = defaultShowUploaded"
         ></div>
@@ -106,8 +106,6 @@
             </div>
     
             <div class="buttons">
-              <!-- <button class="small" @click="uploadImage">Upload Image</button>
-              <button class="small" @click="deleteAvatar">Delete</button> -->
               <button class="small" @click="extended = !extended">
                 {{ extended ? 'Less' : 'More' }}
               </button>
