@@ -33,7 +33,7 @@ const app = window.app = Vue.createApp({
       } else {
         params.delete("q");
       }
-      window.history.replaceState(null, "", `${location.pathname}?${params}`);
+      window.history.replaceState(null, "", `${location.pathname}${params.size ? `?${params}` : ""}`);
     }
   },
   computed: {
