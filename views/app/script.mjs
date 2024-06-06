@@ -5,7 +5,7 @@ const app = window.app = Vue.createApp({
   data() {
     return {
       avatars: [],
-      search: "",
+      search: (new URLSearchParams(location.search)).get("q") || "",
       selectedAvatar: null,
       selectedControlsTab: "",
       extraAvatarsFilters: "all",
@@ -24,6 +24,17 @@ const app = window.app = Vue.createApp({
       this.avatars = avatars;
       this.searching = false;
     },
+  },
+  watch: {
+    search(value) {
+      const params = new URLSearchParams(location.search);
+      if (value) {
+        params.set("q", value);
+      } else {
+        params.delete("q");
+      }
+      window.history.replaceState(null, "", `${location.pathname}?${params}`);
+    }
   },
   computed: {
     searchedAvatars() {
