@@ -174,7 +174,7 @@ app.post("/api/favs/import", async (req, res) => {
       embeds: [{
         title: "Avatars Imported",
         url: CONFIG.http.public_url,
-        description: `New **${diff}** avatars imported from VRChat.${note ? `\nNote: ${note}` : ""}\nTotal avatars: **${cachedAvatars.length}**.`,
+        description: `New **${diff}** avatars imported from VRChat.${note ? `\nImport Note: ${note}` : ""}\nTotal avatars: **${cachedAvatars.length}**.`,
         color: 0x248046,
         timestamp: new Date().toISOString()
       }]
@@ -220,7 +220,7 @@ app.patch("/api/avatars/:id", async (req, res) => {
     embeds: [{
       title: "Avatar Updated",
       url: CONFIG.http.public_url,
-      description: `**[${obj.name}](${CONFIG.http.public_url}/app?q=${obj.id})** has been updated.${obj.note ? `\nNote: ${obj.note}` : ""}`,
+      description: `**[${obj.name}](${CONFIG.http.public_url}/app?q=${obj.id})** has been updated.${obj.note ? `\nNote: ${obj.note}` : ""}${obj.import_note ? `\nImport Note: ${obj.import_note}` : ""}`,
       color: 0xf0b232,
       image:
         avatar.images.has_uploaded_image ? { url: `${CONFIG.http.public_url}/data/avatar_images/${obj.id}/uploaded_image.png` }
