@@ -152,6 +152,7 @@ const componentScripts = {
         loading: false,
         defaultShowUploaded: false,
         showUploaded: false,
+        haveBothImages: false,
         extended: false,
         note: "",
         imageRndId: ""
@@ -167,6 +168,7 @@ const componentScripts = {
     },
     methods: {
       dataChanged() {
+        this.haveBothImages = this.data.images.has_uploaded_image && this.data.images.has_vrchat_image;
         this.defaultShowUploaded = this.data.images.has_uploaded_image;
         this.showUploaded = this.defaultShowUploaded;
         this.note = this.data.avatar.note || "";

@@ -133,3 +133,4 @@ dist
 data/
 
 vrchatfavdb_access_key.txt
+/config.json

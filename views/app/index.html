@@ -86,7 +86,7 @@
         <div 
           class="image" 
           :style="`--image: url('/data/avatar_images/${data.avatar.id}/${showUploaded ? 'uploaded_image' : 'image'}.png${imageRndId ? `?_=${imageRndId}` : ''}');`" 
-          @mouseenter="showUploaded = !defaultShowUploaded"
+          @mouseenter="showUploaded = haveBothImages ? !defaultShowUploaded : defaultShowUploaded"
           @mouseleave="showUploaded = defaultShowUploaded"
         ></div>
         <div class="info">

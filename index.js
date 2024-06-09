@@ -6,6 +6,7 @@ const fs = require("fs");
 const path = require("path");
 const aaq = require("async-and-quick");
 const cookieParser = require('set-cookie-parser');
+const { WebhookClient } = require("discord.js");
 
 process.title = "VRChat Favorite Database";
 console.log("VRChat Favorite Database by TheArmagan");
@@ -19,8 +20,35 @@ const AVATAR_IMAGES_DIR = path.join(DATA_DIR, "avatar_images");
 const EXTRAS_DIR = path.join(DATA_DIR, "extras");
 const VIEWS_DIR = path.join(__dirname, "views");
 
-if (!fs.existsSync(path.join(CWD, "./vrchatfavdb_access_key.txt"))) fs.writeFileSync(path.join(CWD, "./vrchatfavdb_access_key.txt"), "access_key_here", "utf8");
-const ACCESS_KEY = fs.readFileSync(path.join(CWD, "./vrchatfavdb_access_key.txt"), "utf8").trim();
+{
+  let access_key = "change_me!";
+  if (fs.existsSync(path.join(CWD, "./vrchatfavdb_access_key.txt"))) {
+    access_key = fs.readFileSync(path.join(CWD, "./vrchatfavdb_access_key.txt"), "utf8") || "change_me!";
+    fs.rmSync(path.join(CWD, "./vrchatfavdb_access_key.txt"));
+  }
+  if (!fs.existsSync(path.join(CWD, "./config.json"))) fs.writeFileSync(path.join(CWD, "./config.json"), JSON.stringify({
+    access_key,
+    http: {
+      port: 3000,
+      public_url: "http://localhost:3000"
+    },
+    discord: {
+      webhook_urls: {
+        avatars_imported: "",
+        avatar_updated: "",
+        avatar_deleted: ""
+      }
+    }
+  }, null, 2), "utf8");
+}
+const CONFIG = JSON.parse(fs.readFileSync(path.join(CWD, "./config.json"), "utf8").trim());
+
+/** @type {Record<string, WebhookClient>} */
+const webhookClients = Object.entries(CONFIG?.discord?.webhook_urls || {}).reduce((acc, [key, value]) => {
+  value = value?.trim();
+  if (value) acc[key] = new WebhookClient({ url: value }, { allowedMentions: { parse: [] } });
+  return acc;
+}, {});
 
 [
   DATA_DIR,
@@ -80,7 +108,7 @@ app.post("/api/favs/import", async (req, res) => {
   const vrChatCookie = req.body.cookie;
   const note = req.body.note;
 
-  if (req.query.access_key !== ACCESS_KEY) {
+  if (req.query.access_key !== CONFIG.access_key) {
     return res.status(403).send({ ok: false, error: "Invalid access key" });
   }
 
@@ -141,6 +169,19 @@ app.post("/api/favs/import", async (req, res) => {
 
   const diff = cachedAvatars.length - oldCount;
 
+  if (diff > 0) {
+    webhookClients.avatars_imported?.send({
+      embeds: [{
+        title: "Avatars Imported",
+        url: CONFIG.http.public_url,
+        description: `New **${diff}** avatars imported from VRChat.`,
+        color: 0x248046,
+        timestamp: new Date().toISOString()
+      }]
+    });
+  }
+
+
   return res.send({ ok: true, data: diff });
 });
 
@@ -155,10 +196,10 @@ app.get("/api/avatars/:id", async (req, res) => {
 });
 
 app.patch("/api/avatars/:id", async (req, res) => {
-  const avatar = cachedAvatars.find(i => i.avatar.id === req.params.id);
+  let avatar = cachedAvatars.find(i => i.avatar.id === req.params.id);
   if (!avatar) return res.status(404).send({ ok: false });
 
-  if (req.query.access_key !== ACCESS_KEY) {
+  if (req.query.access_key !== CONFIG.access_key) {
     return res.status(403).send({ ok: false, error: "Invalid access key" });
   }
 
@@ -173,6 +214,21 @@ app.patch("/api/avatars/:id", async (req, res) => {
 
   await updateAvatarsCache();
 
+  avatar = cachedAvatars.find(i => i.avatar.id === req.params.id);
+
+  webhookClients.avatar_updated?.send({
+    embeds: [{
+      title: "Avatar Updated",
+      url: CONFIG.http.public_url,
+      description: `**[${obj.name}](${CONFIG.http.public_url}/app?q=${obj.id})** has been updated.${obj.note ? `\nNote: ${obj.note}` : ""}`,
+      color: 0xf0b232,
+      image:
+        avatar.images.has_uploaded_image ? { url: `${CONFIG.http.public_url}/data/avatar_images/${obj.id}/uploaded_image.png` }
+          : avatar.images.has_image ? { url: `${CONFIG.http.public_url}/data/avatar_images/${obj.id}/image.png` } : undefined,
+      timestamp: new Date().toISOString()
+    }]
+  });
+
   return res.send({ ok: true, data: obj });
 });
 
@@ -180,9 +236,22 @@ app.delete("/api/avatars/:id", async (req, res) => {
   const avatar = cachedAvatars.find(i => i.avatar.id === req.params.id);
   if (!avatar) return res.status(404).send({ ok: false });
 
-  if (req.query.access_key !== ACCESS_KEY) {
+  if (req.query.access_key !== CONFIG.access_key) {
     return res.status(403).send({ ok: false, error: "Invalid access key" });
   }
+
+  await webhookClients.avatar_deleted?.send({
+    embeds: [{
+      title: "Avatar Deleted",
+      url: CONFIG.http.public_url,
+      description: `**${avatar.avatar.name}** has been deleted.${avatar.avatar.note ? `\nNote: ${avatar.avatar.note}` : ""}`,
+      color: 0xef5859,
+      image:
+        avatar.images.has_uploaded_image ? { url: `${CONFIG.http.public_url}/data/avatar_images/${avatar.avatar.id}/uploaded_image.png` }
+          : avatar.images.has_image ? { url: `${CONFIG.http.public_url}/data/avatar_images/${avatar.avatar.id}/image.png` } : undefined,
+      timestamp: new Date().toISOString()
+    }]
+  });
 
   await fs.promises.rm(path.join(AVATARS_DIR, `${avatar.avatar.id}.json`), { recursive: true }).catch(() => { });
   await fs.promises.rm(path.join(AVATAR_IMAGES_DIR, avatar.avatar.id), { recursive: true }).catch(() => { });
@@ -196,7 +265,7 @@ app.post("/api/avatars/:id/upload-image", async (req, res) => {
   const avatar = cachedAvatars.find(i => i.avatar.id === req.params.id);
   if (!avatar) return res.status(404).send({ ok: false });
 
-  if (req.query.access_key !== ACCESS_KEY) {
+  if (req.query.access_key !== CONFIG.access_key) {
     return res.status(403).send({ ok: false, error: "Invalid access key" });
   }
 
@@ -210,6 +279,17 @@ app.post("/api/avatars/:id/upload-image", async (req, res) => {
   }
 
   await updateAvatarsCache();
+
+  webhookClients.avatar_updated?.send({
+    embeds: [{
+      title: "Avatar Image Updated",
+      url: CONFIG.http.public_url,
+      description: `**[${avatar.avatar.name}](${CONFIG.http.public_url}/app?q=${avatar.avatar.id})** image has been updated.`,
+      color: 0xf0b232,
+      image: { url: `${CONFIG.http.public_url}/data/avatar_images/${avatar.avatar.id}/uploaded_image.png` },
+      timestamp: new Date().toISOString()
+    }]
+  });
 
   return res.send({ ok: true });
 });
@@ -243,7 +323,7 @@ app.post("/api/avatars/:id/select", async (req, res) => {
 });
 
 app.post("/api/cache/update", async (req, res) => {
-  if (req.query.access_key !== ACCESS_KEY) {
+  if (req.query.access_key !== CONFIG.access_key) {
     return res.status(403).send({ ok: false, error: "Invalid access key" });
   }
   await updateAvatarsCache();
@@ -344,6 +424,46 @@ app.post("/api/vrc/auth/step2", async (req, res) => {
   });
 });
 
-app.listen(parseInt(process.env.PORT || 3000), () => {
-  console.log(`http://localhost:${process.env.PORT || 3000}/app`);
+const userResponseCache = new Map();
+
+app.post("/api/vrc/user", async (req, res) => {
+  const vrChatCookie = req.body.cookie;
+
+  if (req.query.access_key !== CONFIG.access_key) {
+    return res.status(403).send({ ok: false, error: "Invalid access key" });
+  }
+
+  if (userResponseCache.has(vrChatCookie)) {
+    return res.send({ ok: true, data: userResponseCache.get(vrChatCookie) });
+  }
+
+  const apiRes = await fetch(
+    "https://vrchat.com/api/1/auth/user",
+    {
+      headers: {
+        "cookie": vrChatCookie,
+        "user-agent": USER_AGENT,
+      }
+    }
+  );
+
+  if (!apiRes.ok) {
+    let t = await apiRes.text();
+    console.error("Failed to fetch user", t);
+    res.status(apiRes.status).send({ ok: false, error: t });
+    return;
+  }
+
+  const json = await apiRes.json();
+
+  userResponseCache.set(vrChatCookie, json);
+  return res.send({ ok: true, data: json });
+});
+
+setInterval(() => {
+  userResponseCache.clear();
+}, 60000 * 10);
+
+app.listen(parseInt(process.env.PORT || CONFIG.http.port || 3000), () => {
+  console.log(`http://localhost:${process.env.PORT || CONFIG.http.port || 3000}/app`);
 });

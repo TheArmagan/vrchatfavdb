@@ -1,6 +1,7 @@
 {
 	"dependencies": {
 		"async-and-quick": "^1.0.2",
+		"discord.js": "^14.15.3",
 		"express": "^4.19.2",
 		"mime": "3.0.0",
 		"set-cookie-parser": "^2.6.0"
