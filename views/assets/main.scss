@@ -205,7 +205,7 @@ template {
 }
 
 #toast-container {
-  position: absolute;
+  position: fixed;
   inset: 16px;
   display: flex;
   flex-direction: column;
