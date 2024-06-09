@@ -246,9 +246,6 @@ app.delete("/api/avatars/:id", async (req, res) => {
       url: CONFIG.http.public_url,
       description: `**${avatar.avatar.name}** has been deleted.${avatar.avatar.note ? `\nNote: ${avatar.avatar.note}` : ""}`,
       color: 0xef5859,
-      image:
-        avatar.images.has_uploaded_image ? { url: `${CONFIG.http.public_url}/data/avatar_images/${avatar.avatar.id}/uploaded_image.png` }
-          : avatar.images.has_image ? { url: `${CONFIG.http.public_url}/data/avatar_images/${avatar.avatar.id}/image.png` } : undefined,
       timestamp: new Date().toISOString()
     }]
   });

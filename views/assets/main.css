@@ -198,3 +198,50 @@ button.small {
 template {
   display: none;
 }
+
+#toast-container {
+  position: absolute;
+  inset: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: flex-start;
+  align-items: flex-end;
+  pointer-events: none;
+}
+#toast-container .toast {
+  transition: all 100ms ease-in-out;
+  padding: 8px 16px;
+  border-radius: 4px;
+  background-color: #0e1013;
+  border: 2px solid #191e24;
+  color: whitesmoke;
+  pointer-events: all;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  transform: translateY(-100%);
+}
+#toast-container .toast.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+#toast-container .toast > .content {
+  max-width: 450px;
+  font-size: 14px;
+}
+#toast-container .toast > .close {
+  cursor: pointer;
+  opacity: 0.75;
+  transition: all 100ms ease-in-out;
+  display: flex;
+}
+#toast-container .toast > .close:hover {
+  opacity: 1;
+}
+#toast-container .toast > .close svg {
+  width: 16px;
+  height: 16px;
+}

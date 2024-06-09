@@ -27,10 +27,10 @@
           </div>
           <div class="input-container">
             <input v-model="cookie" type="password" placeholder="Cookie.." />
-            <a href="/app/login">
-              <button>Generate</button>
-            </a>
             <button v-if="cookie.trim()" @click="copyCookie">Copy</button>
+            <a href="/app/login">
+              <button>Login</button>
+            </a>
           </div>
         </div>
         <div class="control">
@@ -42,6 +42,7 @@
           </div>
           <div class="input-container">
             <input v-model="accessKey" type="password" placeholder="Access key.." />
+            <button v-if="accessKey.trim()" @click="copyAccessKey">Copy</button>
           </div>
         </div>
       </div>
@@ -137,7 +138,7 @@
           VRChat Favorite Database
         </div>
         <div class="subtext">
-          v0.1.7 by <a href="https://github.com/TheArmagan">TheArmagan</a>
+          v0.1.8 by <a href="https://github.com/TheArmagan">TheArmagan</a>
         </div>
       </div>
       <div class="icons-container">
@@ -194,5 +195,6 @@
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.27/vue.global.min.js"></script>
   <script src="./script.mjs" type="module"></script>
+  <script src="/assets/main.mjs" type="module"></script>
 </body>
 </html>

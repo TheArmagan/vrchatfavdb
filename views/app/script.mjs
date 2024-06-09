@@ -1,14 +1,16 @@
 const LS_COOKIE = "VRCFAVDB;App;Cookie";
 const LS_ACCESS_KEY = "VRCFAVDB;App;AccessKey";
 
+const SEARCH = new URLSearchParams(location.search);
+
 const app = window.app = Vue.createApp({
   data() {
     return {
       avatars: [],
-      search: (new URLSearchParams(location.search)).get("q") || "",
+      search: SEARCH.get("q") || "",
       selectedAvatar: null,
       selectedControlsTab: "",
-      extraAvatarsFilters: "all",
+      extraAvatarsFilters: SEARCH.get("f") || "all",
       searching: true,
       selectedAvatarId: ""
     };
@@ -32,6 +34,15 @@ const app = window.app = Vue.createApp({
         params.set("q", value);
       } else {
         params.delete("q");
+      }
+      window.history.replaceState(null, "", `${location.pathname}${params.size ? `?${params}` : ""}`);
+    },
+    extraAvatarsFilters(value) {
+      const params = new URLSearchParams(location.search);
+      if (value !== "all") {
+        params.set("f", value);
+      } else {
+        params.delete("f");
       }
       window.history.replaceState(null, "", `${location.pathname}${params.size ? `?${params}` : ""}`);
     }
@@ -98,7 +109,11 @@ const componentScripts = {
     methods: {
       copyCookie() {
         navigator.clipboard.writeText(this.cookie);
-        alert("Cookie copied!");
+        Toast.show("Cookie copied!");
+      },
+      copyAccessKey() {
+        navigator.clipboard.writeText(this.accessKey);
+        Toast.show("Access key copied!");
       }
     }
   },
@@ -120,9 +135,9 @@ const componentScripts = {
       },
       async importAvatars() {
         const cookie = localStorage.getItem(LS_COOKIE);
-        if (!cookie) return alert("Please enter your VRChat cookie first.");
+        if (!cookie) return Toast.show("Please enter your VRChat cookie first.");
         const accessKey = localStorage.getItem(LS_ACCESS_KEY);
-        if (!accessKey) return alert("Please enter your access key first.");
+        if (!accessKey) return Toast.show("Please enter your access key first.");
 
         const note = this.note;
 
@@ -137,9 +152,9 @@ const componentScripts = {
 
         this.loading = false;
         let json = await res.json();
-        if (!res.ok) return alert(`Failed to import avatars: ${json.error}`);
+        if (!res.ok) return Toast.show(`Failed to import avatars: ${json.error}`);
 
-        alert(`Success fully added new ${json.data} avatars!`);
+        Toast.show(`Success fully added new ${json.data} avatars!`);
         window.internalApp.updateAvatars();
         this.updateImportDate();
       }
@@ -182,7 +197,7 @@ const componentScripts = {
       },
       async saveNote() {
         const accessKey = localStorage.getItem(LS_ACCESS_KEY);
-        if (!accessKey) return alert("Please enter your access key first.");
+        if (!accessKey) return Toast.show("Please enter your access key first.");
 
         const res = await fetch(`/api/avatars/${this.data.avatar.id}?access_key=${encodeURIComponent(accessKey)}`, {
           method: "PATCH",
@@ -194,7 +209,7 @@ const componentScripts = {
 
         let json = await res.json();
         if (!res.ok) {
-          alert(`Failed to save note: ${json.error || "Unknown error"}`);
+          Toast.show(`Failed to save note: ${json.error || "Unknown error"}`);
           return;
         }
 
@@ -204,15 +219,15 @@ const componentScripts = {
           av.avatar.search_index = json.data.search_index;
         }
 
-        alert("Note saved successfully!");
+        Toast.show("Note saved successfully!");
       },
       async copyId() {
         await navigator.clipboard.writeText(this.data.avatar.id);
-        alert("Avatar Id copied!");
+        Toast.show("Avatar Id copied!");
       },
       uploadImage() {
         const accessKey = localStorage.getItem(LS_ACCESS_KEY);
-        if (!accessKey) return alert("Please enter your access key first.");
+        if (!accessKey) return Toast.show("Please enter your access key first.");
 
         if (!confirm("Do you really want to upload image?")) return;
 
@@ -236,11 +251,11 @@ const componentScripts = {
 
           let json = await res.json();
           if (!res.ok) {
-            alert(`Failed to upload image: ${json.error}`);
+            Toast.show(`Failed to upload image: ${json.error}`);
             return;
           }
 
-          alert("Image uploaded successfully!");
+          Toast.show("Image uploaded successfully!");
           window.internalApp.updateAvatars();
           this.updateImageRndId();
         };
@@ -248,7 +263,7 @@ const componentScripts = {
       },
       async deleteAvatar() {
         const accessKey = localStorage.getItem(LS_ACCESS_KEY);
-        if (!accessKey) return alert("Please enter your access key first.");
+        if (!accessKey) return Toast.show("Please enter your access key first.");
 
         if (!confirm("Do you really want to delete image?")) return;
 
@@ -260,16 +275,16 @@ const componentScripts = {
 
         let json = await res.json();
         if (!res.ok) {
-          alert(`Failed to delete avatar!`);
+          Toast.show(`Failed to delete avatar!`);
           return;
         }
 
-        alert("Avatar deleted successfully!");
+        Toast.show("Avatar deleted successfully!");
         window.internalApp.updateAvatars();
       },
       async selectAvatar() {
         const cookie = localStorage.getItem(LS_COOKIE);
-        if (!cookie) return alert("Please enter your VRChat cookie first.");
+        if (!cookie) return Toast.show("Please enter your VRChat cookie first.");
 
         const res = await fetch(`/api/avatars/${this.data.avatar.id}/select`, {
           method: "POST",
@@ -282,11 +297,11 @@ const componentScripts = {
         const json = await res.json();
 
         if (!res.ok) {
-          alert(`Failed to select avatar: ${json.error}`);
+          Toast.show(`Failed to select avatar: ${json.error}`);
           return;
         }
 
-        alert("Avatar selected successfully!");
+        Toast.show("Avatar selected successfully!");
       }
     }
   }
