@@ -174,7 +174,7 @@ app.post("/api/favs/import", async (req, res) => {
       embeds: [{
         title: "Avatars Imported",
         url: CONFIG.http.public_url,
-        description: `New **${diff}** avatars imported from VRChat.`,
+        description: `New **${diff}** avatars imported from VRChat.${note ? `\nNote: ${note}` : ""}\nTotal avatars: **${cachedAvatars.length}**.`,
         color: 0x248046,
         timestamp: new Date().toISOString()
       }]
